@@ -1,8 +1,10 @@
 package com.example.wanandroid
 
+import android.content.Intent
 import androidx.activity.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.room.Room
+import com.amitshekhar.utils.Utils
 import com.example.base.base.BaseActivity
 import com.example.base.util.launchWithLoadingAndCollect
 import com.example.net.toast
@@ -43,15 +45,17 @@ class LoginActivity : BaseActivity(R.layout.activity_login) {
             AppDatabase::class.java, "mm"
         ).build()
         launchWithLoadingAndCollect({
+
             mViewModel.login(name, pwd)
         }) {
             onSuccess = {
                 lifecycleScope.launch(Dispatchers.IO) {
-                    db.userDao().insertAll(it!!)
-                    val user=db.userDao().getUser(1)
+//                    db.userDao().insertAll(it!!)
+//                    val user=db.userDao().getUser(1)
 
                     withContext(Dispatchers.Main){
-                        button.text =user?.nickname
+//                        button.text =user?.nickname
+                        startActivity(Intent(this@LoginActivity,MainActivity::class.java))
                     }
 
                 }

@@ -3,6 +3,7 @@ package com.example.wanandroid.net
 import com.example.net.base.BaseRepository
 import com.example.net.entity.ApiResponse
 import com.example.wanandroid.bean.User
+import com.example.wanandroid.bean.WxArticle
 
 /**
  * Created by CC
@@ -15,6 +16,10 @@ class OwnRepository : BaseRepository() {
 
     suspend fun login(username: String, password: String): ApiResponse<User?> {
         return executeHttp { mService.login(username, password) }
+
+    }
+   suspend fun list(): ApiResponse<List<WxArticle>?> {
+        return executeHttp { mService.list() }
 
     }
 }

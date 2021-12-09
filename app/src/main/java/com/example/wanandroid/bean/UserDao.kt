@@ -12,11 +12,7 @@ interface UserDao {
     @Insert
     fun insertAll(vararg users: User)
 
-    @Query("select * from User where uid =:id")
-    suspend fun getUser(id: Int): User?
 
-    @Query("select * from User")
-    suspend fun getAllUser(): List<User>?
 
     @Delete
     fun delete(user: User)
