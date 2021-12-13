@@ -2,6 +2,7 @@ package com.example.base.util
 
 import androidx.lifecycle.lifecycleScope
 import com.example.base.base.BaseActivity
+import com.example.base.base.BaseFragment
 import com.example.net.entity.*
 import com.example.net.observer.ResultBuilder
 import kotlinx.coroutines.flow.*
@@ -54,6 +55,17 @@ fun <T> BaseActivity.launchAndCollect(
  * 请求带Loading&&不需要声明LiveData
  */
 fun <T> BaseActivity.launchWithLoadingAndCollect(
+    requestBlock: suspend () -> ApiResponse<T>,
+    listenerBuilder: ResultBuilder<T>.() -> Unit
+) {
+    lifecycleScope.launch {
+        launchFlow(requestBlock, { showLoading() }, { dismissLoading() }).collect { response ->
+            parseResultAndCallback(response, listenerBuilder)
+        }
+    }
+}
+
+fun <T> BaseFragment.launchWithLoadingAndCollect(
     requestBlock: suspend () -> ApiResponse<T>,
     listenerBuilder: ResultBuilder<T>.() -> Unit
 ) {

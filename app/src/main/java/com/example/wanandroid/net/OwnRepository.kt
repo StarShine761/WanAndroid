@@ -18,8 +18,8 @@ class OwnRepository : BaseRepository() {
         return executeHttp { mService.login(username, password) }
 
     }
-   suspend fun list(): ApiResponse<List<WxArticle>?> {
-        return executeHttp { mService.list() }
+   suspend fun list(page:Int): ApiResponse<WxArticle> {
+        return executeHttp { mService.list(page) }
 
     }
 }

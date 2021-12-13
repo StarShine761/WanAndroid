@@ -16,8 +16,8 @@ class ApiViewModel : BaseViewModel() {
     suspend fun login(username: String, password: String): ApiResponse<User?> {
         return repository.login(username, password)
     }
-    suspend fun list(): ApiResponse<List<WxArticle>?> {
-        return repository.list()
+    suspend fun list(page:Int): ApiResponse<WxArticle> {
+        return repository.list(page)
     }
 
 }

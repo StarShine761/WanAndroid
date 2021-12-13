@@ -1,89 +1,79 @@
 package com.example.wanandroid.frament
 
 import android.annotation.SuppressLint
-import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.base.base.BaseFragment
+import com.example.base.util.launchWithLoadingAndCollect
+import com.example.net.toast
 import com.example.wanandroid.R
-import com.example.wanandroid.adapter.RecyclerAdapter
+import com.example.wanandroid.adapter.HomeAdapter
+import com.example.wanandroid.bean.MyData
 import com.example.wanandroid.bean.WxArticle
-import com.example.wanandroid.vm.ItemViewModel
+import com.example.wanandroid.vm.ApiViewModel
 import kotlinx.android.synthetic.main.fragment_home.*
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
 
 /**
  * A simple [Fragment] subclass.
  * Use the [HomeFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
-class HomeFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
-    private  var list= ArrayList<WxArticle>()
-    private val viewModel: ItemViewModel by activityViewModels()
+    private var page = 1
+    private var list = ArrayList<MyData>()
+    private val mViewModel by viewModels<ApiViewModel>()
+    private var adapter: HomeAdapter? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        //使用Recycler
-
-        return inflater.inflate(R.layout.fragment_home, container, false)
-    }
+    private var more=true;
 
     @SuppressLint("NotifyDataSetChanged")
     override fun onResume() {
         super.onResume()
         val layoutManager = LinearLayoutManager(context)
         recyclerview.layoutManager = layoutManager
-        val adapter = RecyclerAdapter(list)
+
+        adapter = HomeAdapter(list)
         recyclerview.adapter = adapter
+        adapter?.loadMoreModule?.setOnLoadMoreListener {
+            if(more){
+                getData()
+                adapter!!.loadMoreModule.loadMoreComplete()
 
-        viewModel.selectedItem.observe(this, Observer {
-            list.addAll(it)
-            adapter.notifyDataSetChanged()
-            // Perform an action with the latest item data
-        })
-    }
+            }else{
+                adapter!!.loadMoreModule.loadMoreEnd()
 
-    companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
             }
+        }
+        getData()
+
+
     }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun getData() {
+        launchWithLoadingAndCollect({
+            mViewModel.list(page)
+
+        }) {
+            onSuccess = {
+
+                list.addAll(it!!.datas)
+                page += 1
+                if (page< it.curPage){
+                    more=false
+                }
+                adapter?.notifyDataSetChanged()
+            }
+            onFailed = { errorCode, errorMsg ->
+                Log.e("errorMsg",errorMsg.toString())
+                toast("errorCode: $errorCode   errorMsg: $errorMsg")
+
+            }
+        }
+    }
+
 }

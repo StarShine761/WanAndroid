@@ -3,10 +3,7 @@ package com.example.wanandroid.net
 import com.example.net.entity.ApiResponse
 import com.example.wanandroid.bean.User
 import com.example.wanandroid.bean.WxArticle
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.GET
-import retrofit2.http.POST
+import retrofit2.http.*
 
 
 interface ApiService {
@@ -22,8 +19,9 @@ interface ApiService {
         @Field("username") userName: String,
         @Field("password") passWord: String
     ): ApiResponse<User?>
-    @GET("wxarticle/chapters/json")
-    suspend fun list(): ApiResponse<List<WxArticle>?>
+
+    @GET("article/listproject/{page}/json?page_size=40")
+    suspend fun list(@Path("page")  page:Int): ApiResponse<WxArticle>
 
 
 }
