@@ -9,8 +9,6 @@ import com.example.wanandroid.vm.ItemViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity(R.layout.activity_main) {
-    private val mViewModel by viewModels<ApiViewModel>()
-    private val viewModel: ItemViewModel by viewModels()
 
 
     override fun init() {
